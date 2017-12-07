@@ -9,25 +9,25 @@ def usersignup(request):
 	form = UserSignup()
 	context['form'] = form
 
-	if request.method=='POST';
-	form = UserSignup(request.POST)
-	if form.is_valid():
-		user = form.save()
-		username = user.username
-		password = user.password
+	if request.method=='POST':
+		form = UserSignup(request.POST)
+		if form.is_valid():
+			user = form.save()
+			username = user.username
+			password = user.password
 
 
-		user.set_password(password)
-		user.save()
+			user.set_password(password)
+			user.save()
 
 
-		auth_user = authenticate(username=username, password=password)
-		login(request, auth_user)
+			auth_user = authenticate(username=username, password=password)
+			login(request, auth_user)
 
-		return redirect("/")
-	
-	return redirect("mycoffee:signup")
-return render(request, 'signup.html', context)
+			return redirect("/")
+		
+		return redirect("mycoffee:signup")
+	return render(request, 'signup.html', context)
 
 
 def userlogin(request):
@@ -50,7 +50,7 @@ def userlogin(request):
 			return redirect("mycoffee:login")
 		return render(request, 'login.html', context)
 
-		def userlogout(requset):
-			logout(request)
-			return redirect("/")
+def userlogout(request):
+	logout(request)
+	return redirect("/")
 

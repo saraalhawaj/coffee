@@ -10,7 +10,7 @@ class UserSignup(forms.ModelForm):
 
 		widgets = {
 
-		'password': froms.PasswordInput(),
+		'password': forms.PasswordInput(),
 		}
 
 
