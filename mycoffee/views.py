@@ -6,8 +6,10 @@ from django.contrib.auth import authenticate, login, logout
 
 from decimal import Decimal
 
-from django.http import JsonResponse
-from .models import Bean, Roast, Syrup, Powder
+from django.http import JsonResponse, Http404
+
+from .models import Bean, Roast, Syrup, Powder, Coffee
+
 import json
 
 
@@ -113,32 +115,50 @@ def create_coffee(request):
 
 
 def ajax_price(request):
-    total_price = Decimal(0)
+	total_price = Decimal(0)
 
-    bean_id = request.GET.get('bean')
-    if bean_id:
-        total_price += Bean.objects.get(id=bean_id).price
+	bean_id = request.GET.get('bean')
+	if bean_id:
+		total_price += Bean.objects.get(id=bean_id).price
 
-    roast_id = request.GET.get('roast')
-    if roast_id:
-        total_price += Roast.objects.get(id=roast_id).price
+	roast_id = request.GET.get('roast')
+	if roast_id:
+		total_price += Roast.objects.get(id=roast_id).price
 
-    syrups = json.loads(request.GET.get('syrups'))
-    if len(syrups)>0:
-        for syrup_id in syrups:
-            total_price += Syrup.objects.get(id=syrup_id).price
+	syrups = json.loads(request.GET.get('syrups'))
+	if len(syrups)>0:
+		for syrup_id in syrups:
+			total_price += Syrup.objects.get(id=syrup_id).price
 
-    powders = json.loads(request.GET.get('powders'))
-    if len(powders)>0:
-        for powder_id in powders:
-            total_price += Powder.objects.get(id=powder_id).price
+	powders = json.loads(request.GET.get('powders'))
+	if len(powders)>0:
+		for powder_id in powders:
+			total_price += Powder.objects.get(id=powder_id).price
 
-    milk = request.GET.get('milk')
-    if milk=='true':
-        total_price += Decimal(0.100)
+	milk = request.GET.get('milk')
+	if milk=='true':
+		total_price += Decimal(0.100)
 
-    shots=request.GET.get('espresso_shots')
-    if shots:
-        total_price += (int(shots)*Decimal(0.250))
+	shots=request.GET.get('espresso_shots')
+	if shots:
+		total_price += (int(shots)*Decimal(0.250))
 
-    return JsonResponse(round(total_price,3), safe=False)
+	return JsonResponse(round(total_price,3), safe=False)
+
+
+def coffee_list(request):
+	if not request.user.is_authenticated():
+		return redirect("mycoffee:login")
+	
+	coffee_list = coffee.objects.afilter(user= request.user)
+	return render(request, 'coffee_list.html', {'coffee_list': coffee_list})
+
+
+def coffee_detail(request, coffee_id):
+
+	if not request.user.is_authenticated():
+		return redirect("mycoffee:login")
+	coffee = Coffee.objects.get(id=coffee_id)
+	if not (request.user == coffee.user or request.user.is_superuser or request.user.is_staff):
+		raise Http404
+	return render(request, 'coffee_detail.html', {'coffee': coffee})
