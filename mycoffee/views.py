@@ -57,7 +57,8 @@ def userlogin(request):
 				login(request, auth_user)
 				return redirect('/')
 			return redirect("mycoffee:login")
-		return render(request, 'login.html', context)
+		return redirect("mycoffee:login")
+	return render(request, 'login.html', context)
 
 def userlogout(request):
 	logout(request)
@@ -73,7 +74,7 @@ def coffee_price(x):
 
 	if x.powder.all().count()>0:
 		for powder in x.powder.all():
-			total_price += powder.x
+			total_price += powder.price
 
 	if x.syrup in x.all().count()>0:
 		for syrup in x.syrup.all():
