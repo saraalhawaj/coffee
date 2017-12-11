@@ -38,3 +38,6 @@ class Coffee(models.Model):
 	foam = models.FloatField()
 	extra_instructions = models.TextField(null=True, blank=True)
 	price = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+
+	def __str__(self):
+		return self.name

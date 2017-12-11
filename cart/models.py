@@ -12,7 +12,7 @@ class CartItem(models.Model):
 	cart = models.ForeignKey("Cart")
 	item = models.ForeignKey(Coffee)
 	quantity = models.PositiveIntegerField(default=1)
-	line_item_total = models.DecimalField(decimal_places = 3, max_digits = 20)
+	line_item_total = models.DecimalField(decimal_places = 3, max_digits = 20,  null=True)
 
 	def __str__(self):
 		return self.item.title
@@ -70,3 +70,36 @@ def do_delivery_and_total(sender, instance, *args, **kwargs):
 	instance.total = "%.3f"%total
 
 pre_save.connect(do_delivery_and_total, sender=Cart)
+
+
+
+
+
+class City(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class UserAddress(models.Model):
+    user = models.ForeignKey(User)
+    name = models.CharField(max_length=120)
+    city = models.ForeignKey(City)
+    block = models.CharField(max_length=3)
+    avenue = models.PositiveIntegerField(blank=True, null=True)
+    street = models.CharField(max_length=255)
+    building_number = models.PositiveIntegerField()
+    floor = models.CharField(max_length=3, null=True, blank=True)
+    apt_number = models.PositiveIntegerField(null=True, blank=True)
+    extra_directions = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+class Order(models.Model):
+    cart = models.ForeignKey(Cart)
+    user = models.ForeignKey(User, null=True)
+    address = models.ForeignKey(UserAddress, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.user.email)

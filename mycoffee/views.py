@@ -68,31 +68,31 @@ def userlogout(request):
 
 #x=price
 def coffee_price(x):
-	total_price = x.bean.price + x.roast.price + (x.espresso_shots.Decimal(0.250))
+	total_price = x.bean.price + x.roast.price + (x.espresso_shots*Decimal(0.250))
 	if x.steamed_milk:
 		total_price += Decimal(0.100)
 
-	if x.powder.all().count()>0:
-		for powder in x.powder.all():
+	if x.powders.all().count()>0:
+		for powder in x.powders.all():
 			total_price += powder.price
 
-	if x.syrup in x.all().count()>0:
-		for syrup in x.syrup.all():
-			total_price+= syrup.x
+	if x.syrups.all().count()>0:
+		for syrup in x.syrups.all():
+			total_price+= syrup.price
 	return total_price
 
 
 
 def create_coffee(request):
 	context = {}
-	if not request.is_authenticated():
+	if not request.user.is_authenticated():
 		return redirect("mycoffee:login")
 	form = CoffeeForm()
 	if request.method == "POST":
 		form = CoffeeForm(request.POST)
-		if form.is_valid:
+		if form.is_valid():
 			coffee = form.save(commit=False)
-			coffee.user = requset.user
+			coffee.user = request.user
 			coffee.save()
 			form.save_m2m()
 			coffee.price = coffee_price(coffee)
@@ -100,7 +100,7 @@ def create_coffee(request):
 			return redirect('/')
 	context['form'] = form
 
-	return (request, 'create_coffee.html', context)
+	return render(request, 'coffee_create.html', context)
 
 
 
@@ -151,7 +151,7 @@ def coffee_list(request):
 	if not request.user.is_authenticated():
 		return redirect("mycoffee:login")
 	
-	coffee_list = coffee.objects.afilter(user= request.user)
+	coffee_list = Coffee.objects.filter(user= request.user)
 	return render(request, 'coffee_list.html', {'coffee_list': coffee_list})
 
 
