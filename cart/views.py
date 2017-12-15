@@ -21,13 +21,16 @@ def cart(request):
     return render(request, 'cart.html', {'cart': cart})
 
 
+
+
+
 def checkout(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
     order, created = Order.objects.get_or_create(cart=cart, user=request.user)
 
     if order.address == None:
         return redirect("cart:select_address")
-    return redirect("/")
+    return redirect("payment:pay",order_id=order.id)
 
 
 def select_address(request):
@@ -64,3 +67,6 @@ def create_address(request):
         "form": form
     }
     return render(request, 'create_address.html', context)
+
+
+

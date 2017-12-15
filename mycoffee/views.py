@@ -163,3 +163,9 @@ def coffee_detail(request, coffee_id):
 	if not (request.user == coffee.user or request.user.is_superuser or request.user.is_staff):
 		raise Http404
 	return render(request, 'coffee_detail.html', {'coffee': coffee})
+
+
+def coffee_delete(request, coffee_id):
+    instance = get_object_or_404(Coffee, id=coffee_id)
+    instance.delete()
+    return redirect("/")

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -46,4 +46,6 @@
     </div>
     {% endif %}
 </div>
+<a href="{% url 'cart:checkout' %}" class = "btn btn-primary">checkout</a>
+
 {% endblock %}

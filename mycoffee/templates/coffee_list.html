@@ -17,8 +17,13 @@
                         </form>
                     </p>
                 </div>
+
             </div>
         </div>
+
+         <a href="{% url 'mycoffee:delete' coffee_id=coffee.id  %}" class = "btn btn-primary">  delete</a>
+         
         {% endfor %}
     </div>
+
 {% endblock content %}
